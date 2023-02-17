@@ -160,20 +160,7 @@ const Notes = ({ deleteNotes, notes, toggleHighlight }: NoteListModel) => {
                   />
                )}
             </div>
-            {/* <Link
-               to={{
-                  pathname: '/notes/1',
-               }}
-               state={{
-                  title: notes.title,
-                  content: notes.noteContent,
-                  highlight: notes.highlight,
-                  label: notes.noteLabel,
-                  date: notes.date,
-               }}
-            >
-               <h2 className="text-[#7B7A91] mb-4">{notes.noteContent}</h2>
-            </Link> */}
+
             {/* Bottom */}
             <div className="text-sm text-[#66687d] flex justify-between">
                <span>{notes.noteLabel}</span>
