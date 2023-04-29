@@ -27,7 +27,6 @@ function App() {
    const [noteHighlight, setNoteHighlight] = useState<boolean>(false);
    const [searchInput, setSearchInput] = useState<string>('');
    const [searchQuery, setSearchQuery] = useState<string>('');
-   const notesRef = collection(db, 'notes');
    // const searchQueryRef = useRef<HTMLInputElement>(null);
 
    // Should have put the notes here and used a context
@@ -40,12 +39,83 @@ function App() {
    //       return [];
    //    }
    // );
+   const notesRef = collection(db, 'notes');
    const [notes, setNotes] = useState<NotesModel[]>([]);
 
    // Loads the notes whenever changes happens
+   // useEffect(() => {
+   //    localStorage.setItem('notelify_notes', JSON.stringify(notes));
+   // }, [notes]);
+
    useEffect(() => {
-      localStorage.setItem('notelify_notes', JSON.stringify(notes));
-   }, [notes]);
+      const getNotes = async () => {
+         try {
+            const data = await getDocs(notesRef);
+            const filteredData: NotesModel[] = data.docs.map((doc) => ({
+               id: doc.id,
+               ...doc.data(),
+            })) as NotesModel[];
+            setNotes(filteredData);
+         } catch (err) {
+            console.log(err);
+         }
+      };
+      getNotes();
+   }, [notesRef]);
+
+   const addNotes = async () => {
+      const newNote = {
+         title: noteTitle,
+         noteContent: noteContent,
+         noteLabel: 'Design',
+         date: new Date().toISOString(),
+         complete: false,
+         highlight: noteHighlight,
+      };
+      try {
+         const docRef = await addDoc(notesRef, newNote);
+         const newNoteWithId = {
+            ...newNote,
+            id: docRef.id,
+         };
+      } catch (err) {
+         console.log(err);
+      }
+   };
+   const saveEditNote = async (id: string, title: string, content: string) => {
+      const noteDoc = doc(db, 'notes', id);
+      try {
+         await updateDoc(noteDoc, {
+            title: title,
+            noteContent: content,
+         });
+      } catch (err) {
+         console.log(err);
+      }
+      // const editedNotes = notes.map((item: NotesModel) => {
+      //    if (item.id === id) {
+      //       item.title = title;
+      //       item.noteContent = content;
+      //    }
+      //    return item;
+      // });
+      // setNotes(editedNotes);
+   };
+
+   const deleteNotes = async (id: string) => {
+      const deleteNoteRef = doc(db, 'notes', id);
+      try {
+         await deleteDoc(deleteNoteRef);
+         const newNotes = notes.filter((note) => note.id !== id);
+         setNotes(newNotes);
+      } catch (err) {
+         console.log(err);
+      }
+      // const newNotes = notes.filter((note) => {
+      //    return note.id !== id;
+      // });
+      // setNotes(newNotes);
+   };
 
    // handler functions
    const showModal = (value: boolean) => {
@@ -65,43 +135,27 @@ function App() {
    };
 
    // Note Functions
-   const addNotes = (e: FormEvent) => {
-      e.preventDefault();
+   // const addNotes = (e: FormEvent) => {
+   //    e.preventDefault();
 
-      const newSetNote = [
-         {
-            id: uuidv4(),
-            title: noteTitle,
-            noteContent: noteContent,
-            noteLabel: 'Design',
-            date: new Date(),
-            complete: false,
-            highlight: noteHighlight,
-         },
-         ...notes,
-      ];
-      // Add condition to check if title or content is empty
-      setNotes(newSetNote);
-      setNoteTitle('');
-      setNoteContent('');
-      showModal(false);
-   };
-   const saveEditNote = (id: string, title: string, content: string) => {
-      const editedNotes = notes.map((item: NotesModel) => {
-         if (item.id === id) {
-            item.title = title;
-            item.noteContent = content;
-         }
-         return item;
-      });
-      setNotes(editedNotes);
-   };
-   const deleteNotes = (id: string) => {
-      const newNotes = notes.filter((note) => {
-         return note.id !== id;
-      });
-      setNotes(newNotes);
-   };
+   //    const newSetNote = [
+   //       {
+   //          id: uuidv4(),
+   //          title: noteTitle,
+   //          noteContent: noteContent,
+   //          noteLabel: 'Design',
+   //          date: new Date(),
+   //          complete: false,
+   //          highlight: noteHighlight,
+   //       },
+   //       ...notes,
+   //    ];
+   //    setNotes(newSetNote);
+   //    setNoteTitle('');
+   //    setNoteContent('');
+   //    showModal(false);
+   // };
+
    const filteredSearchQuery = notes.filter((note) => {
       return note.title
          .toString()
