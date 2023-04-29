@@ -1,4 +1,4 @@
-import React, { FormEvent, useState, useRef, useEffect } from 'react';
+import React, { FC, FormEvent, useState, useRef, useEffect } from 'react';
 import { Icon } from '@iconify/react';
 import AddNoteModal from '../../components/header/AddNoteModal';
 import NoteFilter from './NoteFilter';
@@ -7,92 +7,47 @@ import { v4 as uuidv4 } from 'uuid';
 
 // NEXT ONE IS TO LET HIGHLIGHT CHANGE AND UPLOAD IT TO LOCAL STORAGE.
 
-const Home = () => {
+interface AppModel {
+   addNotes: (e: FormEvent) => any | void;
+   deleteNotes: (id: string) => any | void;
+   handleTitle: (title: string) => any | void;
+   handleContent: (content: string) => any | void;
+   handleNoteHighlight: (highlight: boolean) => void;
+   modalVisible: boolean;
+   noteTitle: string;
+   noteContent: string;
+   noteHighlight: boolean;
+   filteredSearchQuery: NotesModel[];
+   saveEditNote: (id: string, title: string, content: string) => any | void;
+   showModal: (value: boolean) => any | void;
+   toggleHighlight: (id: string) => any | void;
+}
+
+const Home: FC<AppModel> = ({
+   addNotes,
+   deleteNotes,
+   handleTitle,
+   handleContent,
+   handleNoteHighlight,
+   modalVisible,
+   filteredSearchQuery,
+   noteTitle,
+   noteContent,
+   noteHighlight,
+   saveEditNote,
+   showModal,
+   toggleHighlight,
+}) => {
    const emptyArray: any = [];
    // Refs
    const titleRef = useRef<HTMLInputElement>();
    const contentRef = useRef<HTMLTextAreaElement>();
-   // States
-   const [modalVisible, setModalVisible] = useState<boolean>(false);
-   const [noteTitle, setNoteTitle] = useState<string>('');
-   const [noteContent, setNoteContent] = useState<string>('');
-   const [noteHighlight, setNoteHighlight] = useState<boolean>(false);
-   const [query, setQuery] = useState('');
-   // State for handling getItem from locastorage
-   const [notes, setNotes] = useState<NotesModel[]>(
-      // []
-      () => {
-         const storedNotes = localStorage.getItem('notelify_notes');
-         if (storedNotes) {
-            return JSON.parse(storedNotes);
-         }
-         return [];
-      }
-      // JSON.parse(localStorage.getItem('notelify_notes') || [])
-   );
-
-   // Local storage
-   useEffect(() => {
-      localStorage.setItem('notelify_notes', JSON.stringify(notes));
-   }, [notes]);
-
-   // Function to handle if modal is shown or not
-   const showModal = (value: boolean) => {
-      setModalVisible(value);
-   };
-   const handleTitle = (title: string) => {
-      setNoteTitle(title);
-   };
-   const handleContent = (content: string) => {
-      setNoteContent(content);
-   };
-   const handleNoteHighlight = (highlight: boolean) => {
-      setNoteHighlight(highlight);
-   };
-   // const handleNoteTitle = ()
-   const addNotes = (e: FormEvent) => {
-      e.preventDefault();
-
-      const newSetNote = [
-         {
-            id: uuidv4(),
-            title: noteTitle,
-            noteContent: noteContent,
-            noteLabel: 'Design',
-            date: new Date(),
-            complete: false,
-            highlight: noteHighlight,
-         },
-         ...notes,
-      ];
-      setNotes(newSetNote);
-      setNoteTitle('');
-      setNoteContent('');
-      showModal(false);
-   };
-
-   const deleteNotes = (id: string) => {
-      const newNotes = notes.filter((note) => {
-         return note.id !== id;
-      });
-      setNotes(newNotes);
-   };
-
-   const toggleHighlight = (id: string) => {
-      const newNotes = [...notes];
-      const noteItem: any | void = newNotes.find(
-         (noteItem) => noteItem.id === id
-      );
-      if (noteItem.id === id) {
-         noteItem.highlight = !noteItem.highlight;
-      }
-      setNotes(newNotes);
-   };
 
    return (
       <div className="w-full ">
          <NoteFilter
-            notes={notes}
+            notes={filteredSearchQuery}
+            saveEditNote={saveEditNote}
             deleteNotes={deleteNotes}
             toggleHighlight={toggleHighlight}
          />

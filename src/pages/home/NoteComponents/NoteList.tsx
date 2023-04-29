@@ -3,11 +3,14 @@ import { NotesModel } from '../../../components/interface/NotesModel';
 import Notes from './Notes';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Icon } from '@iconify/react';
+import { format } from 'fecha';
 
 interface NoteListModel {
    notes: NotesModel[];
    activeButton: number;
    deleteNotes: (id: string) => any | void;
+   saveEditNote: (id: string, title: string, content: string) => any | void;
+   sortedNotes: any;
    toggleHighlight: (id: string) => any | void;
 }
 
@@ -15,15 +18,24 @@ const NoteList = ({
    notes,
    activeButton,
    deleteNotes,
+   saveEditNote,
+   sortedNotes,
    toggleHighlight,
 }: NoteListModel) => {
-   // const sortedAsc = notes.sort(
-   //    (first, second) => second.date.getTime() - first.date.getTime()
-   // );
-   // const unsortedMap = notes.map((items: NotesModel) => {
-   //    return <Notes key={items.id} notes={items} />;
-   // });
-   // console.log(typeof notes);
+   const [utilities, setUtilities] = useState<boolean>(false);
+   const [activeID, setActiveID] = useState<string>('');
+
+   // Handle Functions
+   const handleShowItem = (id: string) => {
+      if (activeID === id) {
+         //
+      } else {
+         // another conditiona
+         setUtilities(true);
+         setActiveID(id);
+      }
+   };
+
    return (
       <>
          {/* All Notes */}
@@ -34,13 +46,17 @@ const NoteList = ({
                {/* Notes */}
                {activeButton === 0 && (
                   <>
-                     {notes.map((items: NotesModel) => {
+                     {sortedNotes.map((items: NotesModel) => {
                         return (
                            // <AnimatePresence >
                            <React.Fragment key={items.id}>
                               <motion.div
                                  key="fullNote"
-                                 initial={{ y: '50%', opacity: 0, scale: 0.5 }}
+                                 initial={{
+                                    y: '50%',
+                                    opacity: 0,
+                                    scale: 0.5,
+                                 }}
                                  animate={{ y: 0, opacity: 1, scale: 1 }}
                                  exit={{ opacity: 0 }}
                                  transition={{
@@ -51,8 +67,12 @@ const NoteList = ({
                               >
                                  <Notes
                                     // key={items.id}
+                                    saveEditNote={saveEditNote}
                                     deleteNotes={deleteNotes}
                                     notes={items}
+                                    activeId={activeID}
+                                    handleShowItem={handleShowItem}
+                                    utilities={utilities}
                                     toggleHighlight={toggleHighlight}
                                  />
                               </motion.div>

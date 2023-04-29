@@ -7,12 +7,14 @@ import { Icon } from '@iconify/react';
 import { format } from 'fecha';
 
 interface NoteContentModel {
+   saveEditNote: (id: string, title: string, content: string) => any | void;
    deleteNotes: (id: string) => any | void;
    notes: NotesModel[];
    toggleHighlight: (id: string) => any | void;
 }
 
 const NoteFilter = ({
+   saveEditNote,
    deleteNotes,
    notes,
    toggleHighlight,
@@ -21,7 +23,52 @@ const NoteFilter = ({
    const defaultSortOrder = 'Newest - Oldest';
    const secondSortOrder = 'Oldest - Newest';
    const [sortPopUp, setSortPopUp] = useState<boolean>(false);
-   const [itemsOrder, setItemsOrder] = useState<string>(defaultSortOrder);
+   const [itemsOrder, setItemsOrder] = useState<string>(defaultSortOrder); // descending order
+   const [ascendingOrder, setAscendingOrder] = useState<boolean>(false);
+
+   // Functions
+   const sortByDateTime = (array: any[]) => {
+      // Checks if it's an array
+      if (!Array.isArray(array)) {
+         throw new Error('sortByDateTime: Invalid input. Expected an array.');
+      }
+      // Checks if it's a Date Object
+      array.forEach((obj) => {
+         if (
+            typeof obj !== 'object' ||
+            obj === null ||
+            !('date' in obj) ||
+            isNaN(Date.parse(obj.date))
+         ) {
+            throw new Error(
+               'sortByDateTime: Invalid input. Expected an array of objects with a valid date field.'
+            );
+         }
+      });
+
+      // Sort by Date first
+      array.sort((a: any, b: any) => {
+         if (a.date > b.date) {
+            return ascendingOrder ? 1 : -1;
+         } else if (a.date < b.date) {
+            return !ascendingOrder ? 1 : -1;
+         } else {
+            return 0;
+         }
+      });
+      // Sort by Time after
+      array.sort((a: any, b: any) => {
+         const firstTime = new Date(a.date).getTime();
+         const secondTime = new Date(b.date).getTime();
+         return ascendingOrder
+            ? firstTime - secondTime
+            : secondTime - firstTime;
+      });
+
+      return array;
+   };
+
+   const sortedNotes = sortByDateTime(notes);
 
    return (
       <div className="pb-5 space-y-5 ">
@@ -77,6 +124,7 @@ const NoteFilter = ({
                            // "
                            onClick={() => {
                               setItemsOrder(defaultSortOrder);
+                              setAscendingOrder(false);
                            }}
                         >
                            {defaultSortOrder}
@@ -90,6 +138,7 @@ const NoteFilter = ({
                               }`}
                            onClick={() => {
                               setItemsOrder(secondSortOrder);
+                              setAscendingOrder(true);
                            }}
                         >
                            {secondSortOrder}
@@ -104,6 +153,8 @@ const NoteFilter = ({
                   notes={notes}
                   activeButton={activeButton}
                   deleteNotes={deleteNotes}
+                  saveEditNote={saveEditNote}
+                  sortedNotes={sortedNotes}
                   toggleHighlight={toggleHighlight}
                />
             </div>

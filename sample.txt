@@ -1,0 +1,128 @@
+import { useState, useEffect } from 'react';
+import { collection, getDocs, addDoc, updateDoc, deleteDoc } from 'firebase/firestore';
+import { db } from './firebase'; // import your firebase app instance
+
+interface NoteModel {
+  id: string;
+  title: string;
+  body: string;
+}
+
+const Notes = () => {
+  const [notes, setNotes] = useState<NoteModel[]>([]);
+
+  // Load notes from Firestore when the component mounts
+  useEffect(() => {
+    const loadNotes = async () => {
+      const notesRef = collection(db, 'notes');
+      const querySnapshot = await getDocs(notesRef);
+      const loadedNotes: NoteModel[] = querySnapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() })) as NoteModel[];
+      setNotes(loadedNotes);
+    };
+    loadNotes();
+  }, []);
+
+  // Save notes to Firestore whenever the notes array changes
+  useEffect(() => {
+    const saveNotes = async () => {
+      const notesRef = collection(db, 'notes');
+      await Promise.all(notes.map((note) => updateDoc(doc(notesRef, note.id), note)));
+    };
+    saveNotes();
+  }, [notes]);
+
+  // Add a new note to the notes array and Firestore
+  const addNote = async () => {
+    const newNote: NoteModel = { id: '', title: 'New Note', body: '' };
+    const notesRef = collection(db, 'notes');
+    const docRef = await addDoc(notesRef, newNote);
+    setNotes([...notes, { id: docRef.id, ...newNote }]);
+  };
+
+  // Update an existing note in the notes array and Firestore
+  const updateNote = async (noteId: string, updates: Partial<NoteModel>) => {
+    const updatedNotes = notes.map((note) => (note.id === noteId ? { ...note, ...updates } : note));
+    setNotes(updatedNotes);
+  };
+
+  // Delete a note from the notes array and Firestore
+  const deleteNote = async (noteId: string) => {
+    const notesRef = collection(db, 'notes');
+    await deleteDoc(doc(notesRef, noteId));
+    const updatedNotes = notes.filter((note) => note.id !== noteId);
+    setNotes(updatedNotes);
+  };
+
+  return (
+    <>
+      {/* render the notes here */}
+    </>
+  );
+};
+
+
+import { useState } from 'react';
+import { addDoc, collection, serverTimestamp } from 'firebase/firestore';
+import { v4 as uuidv4 } from 'uuid';
+import { db } from './firebase';
+import { NotesModel } from './NotesModel';
+
+const AddNote = () => {
+  const [note, setNote] = useState<NotesModel>({
+    id: uuidv4(),
+    title: '',
+    noteContent: '',
+    noteLabel: '',
+    complete: false,
+    date: serverTimestamp(),
+    highlight: false,
+  });
+
+  const handleAddNote = async () => {
+    try {
+      const notesRef = collection(db, 'notes');
+      await addDoc(notesRef, note);
+      setNote({
+        id: uuidv4(),
+        title: '',
+        noteContent: '',
+        noteLabel: '',
+        complete: false,
+        date: serverTimestamp(),
+        highlight: false,
+      });
+    } catch (error) {
+      console.error('Error adding note: ', error);
+    }
+  };
+
+  return (
+    <>
+      {/* render input fields for note properties */}
+      <button onClick={handleAddNote}>Add Note</button>
+    </>
+  );
+};
+
+const newNote = {
+  id: uuidv4(),
+  title: noteTitle,
+  noteContent: noteContent,
+  noteLabel: 'Design',
+  date: new Date().toISOString(),
+  complete: false,
+  highlight: highlight,
+  docId: '' // Add a new property to store the document ID
+};
+
+// Adds new note to the firestore
+try {
+  const newDocRef = await addDoc(notesRef, newNote);
+  const newNoteWithId = {
+    ...newNote,
+    docId: newDocRef.id // Store the actual document ID
+  };
+  setNotesList([...notesList, newNoteWithId]);
+} catch (err) {
+  console.log(err);
+}

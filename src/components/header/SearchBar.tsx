@@ -1,11 +1,25 @@
-import React from 'react';
+import React, { ChangeEvent, RefObject } from 'react';
 import { Icon } from '@iconify/react';
 
-const SearchBar = () => {
+interface SearchBarModel {
+   handleSetSearchQuery: (event: ChangeEvent<HTMLInputElement>) => void;
+   searchQuery: string;
+}
+
+const SearchBar = ({ handleSetSearchQuery, searchQuery }: SearchBarModel) => {
    return (
-      <div className="flex">
-         <button className="hover:bg-[#1F2026] rounded-full p-2 ">
-            <Icon icon="uil:search" color="#dedede" width="24" height="24" />
+      <div className="bg-transparent md:bg-[#1f2026] rounded-md flex items-center gap-x-2 py-2 px-4 w-full">
+         <div className="hidden md:block w-full ">
+            <input
+               className="bg-transparent focus:outline-none w-full"
+               type="text"
+               placeholder="Search a note"
+               value={searchQuery}
+               onChange={handleSetSearchQuery}
+            />
+         </div>
+         <button className="hover:bg-[#1F2026] rounded-full ">
+            <Icon icon="uil:search" color="#dedede" width="22" height="22" />
          </button>
       </div>
    );
