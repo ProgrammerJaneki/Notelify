@@ -1,4 +1,11 @@
-import { useState, useEffect, FormEvent, useRef, ChangeEvent } from 'react';
+import {
+   useState,
+   useEffect,
+   FormEvent,
+   useRef,
+   ChangeEvent,
+   useCallback,
+} from 'react';
 import { BrowserRouter, Link, Routes, Route } from 'react-router-dom';
 import MainHeader from './components/header/MainHeader';
 import Home from './pages/home/Home';
@@ -17,7 +24,10 @@ import {
    deleteDoc,
    updateDoc,
    doc,
+   getDoc,
+   writeBatch,
 } from 'firebase/firestore';
+import { format } from 'fecha';
 
 function App() {
    // Note States
@@ -27,25 +37,9 @@ function App() {
    const [noteHighlight, setNoteHighlight] = useState<boolean>(false);
    const [searchInput, setSearchInput] = useState<string>('');
    const [searchQuery, setSearchQuery] = useState<string>('');
-   // const searchQueryRef = useRef<HTMLInputElement>(null);
 
-   // Should have put the notes here and used a context
-   // const [notes, setNotes] = useState<NotesModel[]>(
-   //    () => {
-   //       const storedNotes = localStorage.getItem('notelify_notes');
-   //       if (storedNotes) {
-   //          return JSON.parse(storedNotes);
-   //       }
-   //       return [];
-   //    }
-   // );
    const notesRef = collection(db, 'notes');
    const [notes, setNotes] = useState<NotesModel[]>([]);
-
-   // Loads the notes whenever changes happens
-   // useEffect(() => {
-   //    localStorage.setItem('notelify_notes', JSON.stringify(notes));
-   // }, [notes]);
 
    useEffect(() => {
       const getNotes = async () => {
@@ -61,7 +55,7 @@ function App() {
          }
       };
       getNotes();
-   }, [notesRef]);
+   }, [notes]);
 
    const addNotes = async () => {
       const newNote = {
@@ -73,14 +67,22 @@ function App() {
          highlight: noteHighlight,
       };
       try {
+         const batch = writeBatch(db);
          const docRef = await addDoc(notesRef, newNote);
+         batch.set(docRef, newNote);
+         await batch.commit();
          const newNoteWithId = {
             ...newNote,
             id: docRef.id,
          };
+         setNotes([...notes, newNoteWithId]);
       } catch (err) {
          console.log(err);
       }
+      setNoteTitle('');
+      setNoteContent('');
+      setNoteHighlight(false);
+      showModal(false);
    };
    const saveEditNote = async (id: string, title: string, content: string) => {
       const noteDoc = doc(db, 'notes', id);
@@ -92,14 +94,6 @@ function App() {
       } catch (err) {
          console.log(err);
       }
-      // const editedNotes = notes.map((item: NotesModel) => {
-      //    if (item.id === id) {
-      //       item.title = title;
-      //       item.noteContent = content;
-      //    }
-      //    return item;
-      // });
-      // setNotes(editedNotes);
    };
 
    const deleteNotes = async (id: string) => {
@@ -111,50 +105,27 @@ function App() {
       } catch (err) {
          console.log(err);
       }
-      // const newNotes = notes.filter((note) => {
-      //    return note.id !== id;
-      // });
-      // setNotes(newNotes);
    };
 
    // handler functions
-   const showModal = (value: boolean) => {
+   const showModal = useCallback((value: boolean) => {
       setModalVisible(value);
-   };
-   const handleTitle = (title: string) => {
+   }, []);
+   const handleTitle = useCallback((title: string) => {
       setNoteTitle(title);
-   };
-   const handleContent = (content: string) => {
+   }, []);
+   const handleContent = useCallback((content: string) => {
       setNoteContent(content);
-   };
-   const handleNoteHighlight = (highlight: boolean) => {
+   }, []);
+   const handleNoteHighlight = useCallback((highlight: boolean) => {
       setNoteHighlight(highlight);
-   };
-   const handleSetSearchQuery = (event: ChangeEvent<HTMLInputElement>) => {
-      setSearchQuery(event.target.value);
-   };
-
-   // Note Functions
-   // const addNotes = (e: FormEvent) => {
-   //    e.preventDefault();
-
-   //    const newSetNote = [
-   //       {
-   //          id: uuidv4(),
-   //          title: noteTitle,
-   //          noteContent: noteContent,
-   //          noteLabel: 'Design',
-   //          date: new Date(),
-   //          complete: false,
-   //          highlight: noteHighlight,
-   //       },
-   //       ...notes,
-   //    ];
-   //    setNotes(newSetNote);
-   //    setNoteTitle('');
-   //    setNoteContent('');
-   //    showModal(false);
-   // };
+   }, []);
+   const handleSetSearchQuery = useCallback(
+      (event: ChangeEvent<HTMLInputElement>) => {
+         setSearchQuery(event.target.value);
+      },
+      []
+   );
 
    const filteredSearchQuery = notes.filter((note) => {
       return note.title
@@ -162,17 +133,17 @@ function App() {
          .toLowerCase()
          .includes(searchQuery.toLowerCase());
    });
-   const toggleHighlight = (id: string) => {
-      const newNotes = [...notes];
-      const noteItem: any | void = newNotes.find(
-         (noteItem) => noteItem.id === id
-      );
-      if (noteItem.id === id) {
-         noteItem.highlight = !noteItem.highlight;
-      }
-      setNotes(newNotes);
-   };
+   const toggleHighlight = async (id: string) => {
+      const noteDoc = doc(db, 'notes', id);
+      const docSnapshot = await getDoc(noteDoc);
+      const currentHighlightValue = docSnapshot.data()?.highlight;
 
+      try {
+         await updateDoc(noteDoc, { highlight: !currentHighlightValue });
+      } catch (err) {
+         console.log(err);
+      }
+   };
    const handleSearchBarProps = {
       handleSetSearchQuery,
       searchQuery,

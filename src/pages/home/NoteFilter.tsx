@@ -27,37 +27,24 @@ const NoteFilter = ({
    const [ascendingOrder, setAscendingOrder] = useState<boolean>(false);
 
    // Functions
-   const sortByDateTime = (array: any[]) => {
-      // Checks if it's an array
-      if (!Array.isArray(array)) {
-         throw new Error('sortByDateTime: Invalid input. Expected an array.');
-      }
-      // Checks if it's a Date Object
-      array.forEach((obj) => {
-         if (
-            typeof obj !== 'object' ||
-            obj === null ||
-            !('date' in obj) ||
-            isNaN(Date.parse(obj.date))
-         ) {
-            throw new Error(
-               'sortByDateTime: Invalid input. Expected an array of objects with a valid date field.'
-            );
-         }
-      });
-
+   const fake = (arr: any[]) => {
+      return arr;
+   };
+   const sortByDateTime = (note: any[]) => {
       // Sort by Date first
-      array.sort((a: any, b: any) => {
-         if (a.date > b.date) {
+      note.sort((a: any, b: any) => {
+         const fDate = new Date(a.date);
+         const sDate = new Date(b.date);
+         if (fDate > sDate) {
             return ascendingOrder ? 1 : -1;
-         } else if (a.date < b.date) {
+         } else if (fDate < sDate) {
             return !ascendingOrder ? 1 : -1;
          } else {
             return 0;
          }
       });
-      // Sort by Time after
-      array.sort((a: any, b: any) => {
+      // Sort by Time
+      note.sort((a: any, b: any) => {
          const firstTime = new Date(a.date).getTime();
          const secondTime = new Date(b.date).getTime();
          return ascendingOrder
@@ -65,7 +52,7 @@ const NoteFilter = ({
             : secondTime - firstTime;
       });
 
-      return array;
+      return note;
    };
 
    const sortedNotes = sortByDateTime(notes);

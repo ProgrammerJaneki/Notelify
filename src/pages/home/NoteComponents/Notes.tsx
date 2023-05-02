@@ -1,4 +1,4 @@
-import React, { FormEvent, useEffect, useRef, useState } from 'react';
+import React, { FormEvent, useEffect, useMemo, useRef, useState } from 'react';
 import { Link, generatePath, useNavigate, useParams } from 'react-router-dom';
 import { NotesModel } from '../../../components/interface/NotesModel';
 import { Icon } from '@iconify/react';
@@ -53,10 +53,6 @@ const Notes = ({
 
       setNoteTitle(value);
    };
-   // useEffect(() => {
-   //    handleChangeItems();
-   //    console.log(activeId);
-   // }, [activeId]);
 
    useEffect(() => {
       // we'll only call this when the input box that has titleRef is rendered
@@ -64,10 +60,6 @@ const Notes = ({
    }, [utilities]);
 
    const [bookmark, setBookmark] = useState<boolean>(false);
-   let currDate: string = new Date().toLocaleString();
-   // let formattedDate = format(new Date(2015, 10, 20), 'isoDate');
-   // let formattedDate = format(new Date(notes.date), 'isoDate');
-   let formattedDate = format(new Date(notes.date), 'YYYY-MM-DD [|] HH:mm A');
 
    // ✅Sort
    // Handles✅
@@ -86,6 +78,13 @@ const Notes = ({
    const handleToggleHighlight = () => {
       toggleHighlight(notes.id);
    };
+   const handleFormattedDate = useMemo(() => {
+      return (notesDate: string) => {
+         const date = new Date(notesDate); // Parse date from string
+         let formattedDate = format(date, 'YYYY-MM-DD [|] HH:mm A');
+         return formattedDate;
+      };
+   }, [notes]);
 
    return (
       <div>
@@ -214,13 +213,7 @@ const Notes = ({
             {/* Bottom */}
             <div className="text-sm text-[#66687d] flex justify-between ">
                <span>{notes.noteLabel}</span>
-               <span
-                  onClick={() => {
-                     console.log(notes.date);
-                  }}
-               >
-                  {formattedDate}
-               </span>
+               <span>{handleFormattedDate(notes.date)}</span>
                {/* <span>2022-12-03</span> */}
             </div>
 

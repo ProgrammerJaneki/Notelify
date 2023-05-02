@@ -19,90 +19,85 @@ import { v4 as uuidv4 } from 'uuid';
 import { format } from 'fecha';
 
 const Trash = () => {
-   const [noteTitle, setNoteTitle] = useState<string>('');
-   const [noteContent, setNoteContent] = useState<string>('');
-   const [highlight, setNoteHighlight] = useState<boolean>(false);
-   const [notesList, setNotesList] = useState<NotesModel[]>([]);
+   // const [noteTitle, setNoteTitle] = useState<string>('');
+   // const [noteContent, setNoteContent] = useState<string>('');
+   // const [highlight, setNoteHighlight] = useState<boolean>(false);
+   // const [notesList, setNotesList] = useState<NotesModel[]>([]);
 
-   const notesRef = collection(db, 'notes');
-   const [updatedNoteTitle, setUpdatedNoteTitle] = useState<string>('');
+   // const notesRef = collection(db, 'notes');
+   // const [updatedNoteTitle, setUpdatedNoteTitle] = useState<string>('');
 
-   useEffect(() => {
-      const getNotes = async () => {
-         // Reads the data
-         // Sets the note list
-         try {
-            const data = await getDocs(notesRef);
-            const filteredData: NotesModel[] = data.docs.map((doc) => ({
-               id: doc.id,
-               ...doc.data(),
-            })) as NotesModel[];
-            setNotesList(filteredData);
-         } catch (err) {
-            console.log(err);
-         }
-      };
-      getNotes();
-   }, [notesRef]);
+   // useEffect(() => {
+   //    const getNotes = async () => {
+   //       try {
+   //          const data = await getDocs(notesRef);
+   //          const filteredData: NotesModel[] = data.docs.map((doc) => ({
+   //             id: doc.id,
+   //             ...doc.data(),
+   //          })) as NotesModel[];
+   //          setNotesList(filteredData);
+   //       } catch (err) {
+   //          console.log(err);
+   //       }
+   //    };
+   //    getNotes();
+   // }, [notesRef]);
 
-   const addNote = async () => {
-      const newNote = {
-         title: noteTitle,
-         noteContent: noteContent,
-         noteLabel: 'Design',
-         date: new Date().toISOString(),
-         complete: false,
-         highlight: highlight,
-      };
-      // Adds new note to the firestore
-      try {
-         const docRef = await addDoc(notesRef, newNote);
-         const newNoteWithId = {
-            ...newNote,
-            id: docRef.id,
-         };
-         setNotesList([...notesList, newNoteWithId]);
-      } catch (err) {
-         console.log(err);
-      }
-   };
+   // const addNote = async () => {
+   //    const newNote = {
+   //       title: noteTitle,
+   //       noteContent: noteContent,
+   //       noteLabel: 'Design',
+   //       date: new Date().toISOString(),
+   //       complete: false,
+   //       highlight: highlight,
+   //    };
+   //    try {
+   //       const docRef = await addDoc(notesRef, newNote);
+   //       const newNoteWithId = {
+   //          ...newNote,
+   //          id: docRef.id,
+   //       };
+   //       setNotesList([...notesList, newNoteWithId]);
+   //    } catch (err) {
+   //       console.log(err);
+   //    }
+   // };
 
-   const updateNote = async (noteID: string) => {
-      const noteDoc = doc(db, 'notes', noteID);
-      try {
-         await updateDoc(noteDoc, { title: updatedNoteTitle });
-      } catch (err) {
-         console.log(err);
-      }
-   };
+   // const updateNote = async (noteID: string) => {
+   //    const noteDoc = doc(db, 'notes', noteID);
+   //    try {
+   //       await updateDoc(noteDoc, { title: updatedNoteTitle });
+   //    } catch (err) {
+   //       console.log(err);
+   //    }
+   // };
 
-   const deleteNote = async (noteID: string) => {
-      const deleteNoteRef = doc(db, 'notes', noteID);
-      try {
-         await deleteDoc(deleteNoteRef);
-         const newNotes = notesList.filter((note) => note.id !== noteID);
-         setNotesList(newNotes);
-      } catch (err) {
-         console.log(err);
-      }
-   };
+   // const deleteNote = async (noteID: string) => {
+   //    const deleteNoteRef = doc(db, 'notes', noteID);
+   //    try {
+   //       await deleteDoc(deleteNoteRef);
+   //       const newNotes = notesList.filter((note) => note.id !== noteID);
+   //       setNotesList(newNotes);
+   //    } catch (err) {
+   //       console.log(err);
+   //    }
+   // };
 
    // Formats date
-   const handleFormattedDate = (notesDate: string) => {
-      const date = new Date(notesDate); // Parse date from string
-      let formattedDate = format(date, 'YYYY-MM-DD [|] HH:mm A');
-      return formattedDate;
-   };
+   // const handleFormattedDate = (notesDate: string) => {
+   //    const date = new Date(notesDate); // Parse date from string
+   //    let formattedDate = format(date, 'YYYY-MM-DD [|] HH:mm A');
+   //    return formattedDate;
+   // };
 
    return (
       <>
          {/* Header */}
          <h2>Trash</h2>
-         <div className="pt-4">
-            <Auth />
-         </div>
+         <div className="pt-4">{/* <Auth /> */}</div>
          {/* Sample Note Adding */}
-         <div className="border-2 border-red-200 rounded-md my-6 p-3 space-y-2">
+         {/* <div className="border-2 border-red-200 rounded-md my-6 p-3 space-y-2">
             <input
                className="bg-transparent border-b-2 focus:outline-none w-full"
                placeholder="Title..."
@@ -167,7 +162,7 @@ const Trash = () => {
                   </div>
                </div>
             ))}
-         </div>
+         </div> */}
       </>
    );
 };
