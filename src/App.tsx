@@ -41,19 +41,19 @@ function App() {
    const notesRef = collection(db, 'notes');
    const [notes, setNotes] = useState<NotesModel[]>([]);
 
+   const getNotes = async () => {
+      try {
+         const data = await getDocs(notesRef);
+         const filteredData: NotesModel[] = data.docs.map((doc) => ({
+            id: doc.id,
+            ...doc.data(),
+         })) as NotesModel[];
+         setNotes(filteredData);
+      } catch (err) {
+         console.log(err);
+      }
+   };
    useEffect(() => {
-      const getNotes = async () => {
-         try {
-            const data = await getDocs(notesRef);
-            const filteredData: NotesModel[] = data.docs.map((doc) => ({
-               id: doc.id,
-               ...doc.data(),
-            })) as NotesModel[];
-            setNotes(filteredData);
-         } catch (err) {
-            console.log(err);
-         }
-      };
       getNotes();
    }, []);
 
@@ -94,6 +94,7 @@ function App() {
       } catch (err) {
          console.log(err);
       }
+      getNotes();
    };
 
    const deleteNotes = async (id: string) => {
