@@ -52,9 +52,11 @@ function App() {
       } catch (err) {
          console.log(err);
       }
+      console.log('Get Notes running..');
    };
    useEffect(() => {
       getNotes();
+      console.log('Use Effect running...');
    }, []);
 
    const addNotes = async () => {
@@ -144,6 +146,7 @@ function App() {
       } catch (err) {
          console.log(err);
       }
+      getNotes();
    };
    const handleSearchBarProps = {
       handleSetSearchQuery,

@@ -150,7 +150,7 @@ const NoteList = ({
                               <>
                                  <React.Fragment key={items.id}>
                                     <motion.div
-                                       key="fullNote"
+                                       key="highlightNot"
                                        initial={{
                                           y: '50%',
                                           opacity: 0,
