@@ -82,7 +82,7 @@ const NoteFilter = ({
          <div className="space-y-4">
             {/* Header */}
             <div className="flex justify-between ">
-               <h2>LIST NOTES</h2>
+               <h2>List Notes</h2>
                <button
                   className="relative text-[#787A91] flex items-center gap-x-2 z-50"
                   onClick={() => {
