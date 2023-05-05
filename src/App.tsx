@@ -55,7 +55,7 @@ function App() {
          }
       };
       getNotes();
-   }, [notes]);
+   }, []);
 
    const addNotes = async () => {
       const newNote = {
