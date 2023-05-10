@@ -14,7 +14,6 @@ import { NotesModel } from './components/interface/NotesModel';
 import Trash from './pages/Trash';
 import { v4 as uuidv4 } from 'uuid';
 // firebase imports
-import Auth from './utilities/auth';
 import 'firebase/firestore';
 import { db } from './components/config/notelify-firebase';
 import {
