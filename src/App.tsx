@@ -10,6 +10,9 @@ import { Routes, Route } from 'react-router-dom';
 import MainHeader from './components/header/MainHeader';
 import Home from './pages/home/Home';
 import { NotesModel } from './components/interface/NotesModel';
+import Trash from './pages/Trash';
+import { v4 as uuidv4 } from 'uuid';
+// firebase imports
 import 'firebase/firestore';
 import { db } from './components/config/notelify-firebase';
 import {
@@ -43,9 +46,11 @@ function App() {
       } catch (err) {
          console.log(err);
       }
+      console.log('Get Notes running..');
    };
    useEffect(() => {
       getNotes();
+      console.log('Use Effect running...');
    }, []);
 
    const addNotes = async () => {
@@ -135,6 +140,7 @@ function App() {
       } catch (err) {
          console.log(err);
       }
+      getNotes();
    };
    const handleSearchBarProps = {
       handleSetSearchQuery,

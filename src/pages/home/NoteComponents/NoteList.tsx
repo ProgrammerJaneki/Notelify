@@ -3,7 +3,6 @@ import { NotesModel } from '../../../components/interface/NotesModel';
 import Notes from './Notes';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Icon } from '@iconify/react';
-import { format } from 'fecha';
 
 interface NoteListModel {
    notes: NotesModel[];
