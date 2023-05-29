@@ -1,9 +1,9 @@
 import React, { FC, FormEvent, useState, useRef, useEffect } from 'react';
+import { Suspense, lazy } from 'react';
 import { Icon } from '@iconify/react';
-import AddNoteModal from '../../components/header/AddNoteModal';
+const AddNoteModal = lazy(() => import('../../components/header/AddNoteModal'));
 import NoteFilter from './NoteFilter';
 import { NotesModel } from '../../components/interface/NotesModel';
-import { v4 as uuidv4 } from 'uuid';
 
 // NEXT ONE IS TO LET HIGHLIGHT CHANGE AND UPLOAD IT TO LOCAL STORAGE.
 
@@ -38,8 +38,6 @@ const Home: FC<AppModel> = ({
    showModal,
    toggleHighlight,
 }) => {
-   const emptyArray: any = [];
-   // Refs
    const titleRef = useRef<HTMLInputElement>();
    const contentRef = useRef<HTMLTextAreaElement>();
 
@@ -61,24 +59,23 @@ const Home: FC<AppModel> = ({
                <Icon
                   className="w-[32px] h-[32px]"
                   icon="material-symbols:add"
-                  // color="#E7AB79"
                   color="#FFF"
-                  // color="#16171D"
                />
             </button>
          </div>
-         {/* This will be shown if noteModal is true */}
          {modalVisible && (
-            <AddNoteModal
-               addNotes={addNotes}
-               handleTitle={handleTitle}
-               handleContent={handleContent}
-               handleNoteHighlight={handleNoteHighlight}
-               noteTitle={noteTitle}
-               noteContent={noteContent}
-               noteHighlight={noteHighlight}
-               showModal={showModal}
-            />
+            <Suspense fallback={<div>Loading..</div>}>
+               <AddNoteModal
+                  addNotes={addNotes}
+                  handleTitle={handleTitle}
+                  handleContent={handleContent}
+                  handleNoteHighlight={handleNoteHighlight}
+                  noteTitle={noteTitle}
+                  noteContent={noteContent}
+                  noteHighlight={noteHighlight}
+                  showModal={showModal}
+               />
+            </Suspense>
          )}
       </div>
    );

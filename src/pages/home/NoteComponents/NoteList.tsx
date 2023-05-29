@@ -14,6 +14,28 @@ interface NoteListModel {
    toggleHighlight: (id: string) => any | void;
 }
 
+const MotionWrapper = ({ content }: { content: React.ReactNode }) => (
+   <React.Fragment>
+      <motion.div
+         key="fullNote"
+         initial={{
+            y: '50%',
+            opacity: 0,
+            scale: 0.5,
+         }}
+         animate={{ y: 0, opacity: 1, scale: 1 }}
+         exit={{ opacity: 0 }}
+         transition={{
+            duration: 0.3,
+            delay: 0.2,
+            ease: [0, 0.71, 0.2, 1.01],
+         }}
+      >
+         {content}
+      </motion.div>
+   </React.Fragment>
+);
+
 const NoteList = ({
    notes,
    activeButton,
@@ -59,25 +81,10 @@ const NoteList = ({
                   <>
                      {sortedNotesMemo.map((items: NotesModel) => {
                         return (
-                           // <AnimatePresence >
-                           <React.Fragment key={items.id}>
-                              <motion.div
-                                 key="fullNote"
-                                 initial={{
-                                    y: '50%',
-                                    opacity: 0,
-                                    scale: 0.5,
-                                 }}
-                                 animate={{ y: 0, opacity: 1, scale: 1 }}
-                                 exit={{ opacity: 0 }}
-                                 transition={{
-                                    duration: 0.3,
-                                    delay: 0.2,
-                                    ease: [0, 0.71, 0.2, 1.01],
-                                 }}
-                              >
+                           <MotionWrapper
+                              key={items.id}
+                              content={
                                  <Notes
-                                    // key={items.id}
                                     saveEditNote={saveEditNote}
                                     deleteNotes={deleteNotes}
                                     notes={items}
@@ -86,9 +93,8 @@ const NoteList = ({
                                     utilities={utilities}
                                     toggleHighlight={toggleHighlight}
                                  />
-                              </motion.div>
-                              {/* // </AnimatePresence> */}
-                           </React.Fragment>
+                              }
+                           ></MotionWrapper>
                         );
                      })}
                   </>
@@ -148,28 +154,10 @@ const NoteList = ({
                         sortedNotesMemo.map((items: NotesModel) => {
                            return (
                               <>
-                                 <React.Fragment key={items.id}>
-                                    <motion.div
-                                       key="fullNote"
-                                       initial={{
-                                          y: '50%',
-                                          opacity: 0,
-                                          scale: 0.5,
-                                       }}
-                                       animate={{
-                                          y: 0,
-                                          opacity: 1,
-                                          scale: 1,
-                                       }}
-                                       exit={{ opacity: 0 }}
-                                       transition={{
-                                          duration: 0.3,
-                                          delay: 0.2,
-                                          ease: [0, 0.71, 0.2, 1.01],
-                                       }}
-                                    >
+                                 <MotionWrapper
+                                    key={items.id}
+                                    content={
                                        <Notes
-                                          // key={items.id}
                                           saveEditNote={saveEditNote}
                                           deleteNotes={deleteNotes}
                                           notes={items}
@@ -178,9 +166,8 @@ const NoteList = ({
                                           utilities={utilities}
                                           toggleHighlight={toggleHighlight}
                                        />
-                                    </motion.div>
-                                    {/* // </AnimatePresence> */}
-                                 </React.Fragment>
+                                    }
+                                 ></MotionWrapper>
                               </>
                            );
                         })
@@ -191,7 +178,6 @@ const NoteList = ({
                )}
             </>
          )}
-         {/* {console.log('Sorted✅: ', sortedAsc)} */}
       </>
    );
 };

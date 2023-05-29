@@ -6,15 +6,10 @@ import {
    ChangeEvent,
    useCallback,
 } from 'react';
-import { BrowserRouter, Link, Routes, Route } from 'react-router-dom';
+import { Routes, Route } from 'react-router-dom';
 import MainHeader from './components/header/MainHeader';
 import Home from './pages/home/Home';
-import IndividualNote from './pages/home/NoteComponents/IndividualNote';
 import { NotesModel } from './components/interface/NotesModel';
-import Trash from './pages/Trash';
-import { v4 as uuidv4 } from 'uuid';
-// firebase imports
-import Auth from './utilities/auth';
 import 'firebase/firestore';
 import { db } from './components/config/notelify-firebase';
 import {
@@ -27,20 +22,16 @@ import {
    getDoc,
    writeBatch,
 } from 'firebase/firestore';
-import { format } from 'fecha';
 
 function App() {
-   // Note States
    const [modalVisible, setModalVisible] = useState<boolean>(false);
    const [noteTitle, setNoteTitle] = useState<string>('');
    const [noteContent, setNoteContent] = useState<string>('');
    const [noteHighlight, setNoteHighlight] = useState<boolean>(false);
-   const [searchInput, setSearchInput] = useState<string>('');
    const [searchQuery, setSearchQuery] = useState<string>('');
 
    const notesRef = collection(db, 'notes');
    const [notes, setNotes] = useState<NotesModel[]>([]);
-
    const getNotes = async () => {
       try {
          const data = await getDocs(notesRef);
@@ -167,14 +158,11 @@ function App() {
    };
 
    return (
-      <div className="main min-h-screen h-auto mx-auto px-3.5 sm:px-6 max-w-5xl">
+      <div className="main min-h-screen h-auto mx-auto py-2 px-3 sm:px-6 max-w-5xl">
          <MainHeader {...handleSearchBarProps} />
-         <div className="py-2.5">
+         <div className="">
             <Routes>
                <Route path="/" element={<Home {...handleHomeProps} />} />
-               <Route path="/bin" element={<Trash />} />
-               <Route path="/notes/:title" element={<IndividualNote />} />
-               {/* }></Route> */}
             </Routes>
          </div>
       </div>

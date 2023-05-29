@@ -58,8 +58,6 @@ const AddNoteModal: FC<HomeModel> = ({
       handleNoteHighlight(false);
       setNoticeModal(false);
       showModal(false);
-      // create a pop up if i want to save changes
-      // create another function to check if there's content/title and put invalid instead of save
    };
 
    return (

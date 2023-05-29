@@ -106,9 +106,6 @@ const NoteFilter = ({
                                     ? 'bg-[#1F2026]'
                                     : ''
                               }`}
-                           // className="
-                           // hover:bg-[#1F2026] py-1 px-2 transition-all duration-150 ease-linear
-                           // "
                            onClick={() => {
                               setItemsOrder(defaultSortOrder);
                               setAscendingOrder(false);

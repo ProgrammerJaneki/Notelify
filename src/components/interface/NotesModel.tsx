@@ -5,5 +5,5 @@ export interface NotesModel {
    noteLabel: string;
    complete?: boolean;
    date: any;
-   highlight?: boolean;
+   highlight: boolean;
 }

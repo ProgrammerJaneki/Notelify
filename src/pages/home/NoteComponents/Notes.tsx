@@ -40,6 +40,7 @@ const Notes = ({
    // Edit Notes
    const [noteTitle, setNoteTitle] = useState<string>(notes.title);
    const [noteContent, setNoteContent] = useState<string>(notes.noteContent);
+   const [noteHighlight, setNoteHighlight] = useState<boolean>(notes.highlight);
    // Refs
    const titleRef = useRef<HTMLTextAreaElement>(null);
 
@@ -94,7 +95,6 @@ const Notes = ({
          >
             {/* Top */}
             <div className="flex justify-between items-start  mb-2 ">
-               {/* Left | Title */}
                {activeId !== notes.id ? (
                   <span className="break-words font-bold text-lg min-h-[2rem] max-h-[2rem] max-w-[80%] overflow-hidden">
                      {notes.title}
@@ -116,21 +116,20 @@ const Notes = ({
                      className="hover:text-[#E69C5E] text-[#DEDEDE] mb-0 transition-all duration-150 ease-linear"
                      onClick={() => {
                         handleToggleHighlight();
-                        // setBookmark(!bookmark);
+                        setNoteHighlight(!noteHighlight);
                      }}
                      type="button"
                   >
-                     {!notes.highlight && (
+                     {!noteHighlight && (
                         <Icon
                            className=" "
                            icon="material-symbols:bookmark-outline"
                            color=""
-                           // color={`${bookmark ? '#E69C5E' : '#DEDEDE' }`}
                            width={iconWidth}
                            height={iconHeight}
                         />
                      )}
-                     {notes.highlight && (
+                     {noteHighlight && (
                         <Icon
                            icon="material-symbols:bookmark-rounded"
                            color="#e69c5e"
@@ -169,19 +168,10 @@ const Notes = ({
             </div>
 
             {/* Body */}
-            <div
-               className="items-center mb-4 md:min-h-[4.5rem] max-h-[4.5rem] overflow-hidden"
-               // Click
-               // onClick={() => {
-               //    handleChangeItems();
-               // }}
-            >
+            <div className="items-center mb-4 md:min-h-[4.5rem] max-h-[4.5rem] overflow-hidden">
                {activeId !== notes.id ? (
                   <p
                      className="cursor-pointer break-words text-[#7B7A91] min-h-[4rem]"
-                     // onClick={() => {
-                     //    handleShowItem(notes.id);
-                     // }}
                      onClick={() => {
                         handleChangeItems();
                      }}
@@ -199,14 +189,6 @@ const Notes = ({
                         setNoteContent(e.currentTarget.value);
                      }}
                   ></textarea>
-                  // <input
-                  //    type="text"
-                  //    className="bg-transparent text-[#7B7A91] focus:outline-none "
-                  //    value={noteContent}
-                  //    onChange={(e) => {
-                  //       setNoteContent(e.currentTarget.value);
-                  //    }}
-                  // />
                )}
             </div>
 
@@ -257,16 +239,3 @@ const Notes = ({
 };
 
 export default Notes;
-
-// GONNA CHANGE THE DELETE TO THE NOTES INSTEAD
-// console.log('Note ID: ', notes.id),
-//    navigate(`notes/${notes.title}`, {
-//       state: {
-//          id: notes.id,
-//          title: notes.title,
-//          content: notes.noteContent,
-//          highlight: notes.highlight,
-//          label: notes.noteLabel,
-//          date: notes.date,
-//       },
-//    });
