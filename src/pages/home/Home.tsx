@@ -64,7 +64,7 @@ const Home: FC<AppModel> = ({
             </button>
          </div>
          {modalVisible && (
-            <Suspense fallback={<div>Loading..</div>}>
+            <Suspense fallback={<div></div>}>
                <AddNoteModal
                   addNotes={addNotes}
                   handleTitle={handleTitle}
